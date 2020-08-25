@@ -1,4 +1,5 @@
-﻿using Py_embedded;
+﻿using RaylibTest.Python;
+using RaylibTest.Queue;
 using Python.Runtime;
 using Raylib_cs;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace RaylibTest
+namespace RaylibTest.MainAssembly
 {
     class Game
     {

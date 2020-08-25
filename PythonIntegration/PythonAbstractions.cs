@@ -6,7 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime;
 
-namespace Py_embedded
+namespace RaylibTest.Python
 {
     public class PythonAbstractions
     {

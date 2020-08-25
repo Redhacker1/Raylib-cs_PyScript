@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using RaylibTest.Queue;
 using Python.Runtime;
 
-namespace RaylibTest
+namespace RaylibTest.Python
 {
     class PythonTask : Task_base
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RaylibTest
+namespace RaylibTest.Queue
 {
     class Task_base
     {
