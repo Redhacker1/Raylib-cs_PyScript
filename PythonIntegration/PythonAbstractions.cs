@@ -43,27 +43,28 @@ namespace Py_embedded
 
         private void Create_Linux_EnvVariables(string custom_PATH)
         {
-            string pathToPython = Environment.CurrentDirectory + @"\Python37\Linux";
-            string path = pathToPython + ";";
+            string pathToPython = @"\Python37\Linux";
+            string path = pathToPython + ";" +
+            Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
 
             var lib = new[]
-    {
-                pathToPython + @"\Lib",
-                pathToPython + @"\DLLs",
-                pathToPython + @"\Lib\site-packages",
-                Environment.CurrentDirectory + @"\Scripts"
+                {
+                @"\Python37\Linux\lib\python3.7",
+                @"\Python37\Linux\DLLs",
+                @"\Python37\Linux\lib\python3.7\site-packages",
+                @"\Scripts"
                 };
 
             if (custom_PATH != "")
             {
                 lib = new[]
                 {
-                pathToPython + @"\Lib",
-                pathToPython + @"\DLLs",
-                pathToPython + @"\Lib\site-packages",
-                Environment.CurrentDirectory + @"\Scripts",
+                @"\Python37\Linux\lib\python3.7",
+                @"\Python37\Linux\DLLs",
+                @"\Python37\Linux\lib\python3.7\site-packages",
+                @"\Scripts",
                 custom_PATH
                 };
             }
@@ -74,9 +75,17 @@ namespace Py_embedded
 
         public void Initpython(string custom_PATH = "")
         {
-            Create_Windows_EnvVariables(custom_PATH);
+            if (Environment.OSVersion.ToString().Contains("Unix"))
+            {
+                Console.WriteLine("IsLinux");
+                Create_Linux_EnvVariables(custom_PATH);
+            }
+            else
+            {
+                Create_Windows_EnvVariables(custom_PATH);
+            }
             Initialize();
-
+            
         }
 
         string FSpath_to_PyPath(string FSPath)
