@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "GIZDnctVi7UDHUGLWaZzzh96QJfPH1Bd9o+zQ8XdAd/dcbOEw8q0d8NmhmhJNLA+jUWqD6306Azlt6wVNILSKA==",
+  "dgSpecHash": "84djLPxK0tSdi6htyxjFL6IwAaI6QelrdN5BgrxG/aNt+iln/j7LZH3aoaRJI4M8a1pxLgVIemdfGVkyVH5+lw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Donovan\\Documents\\GitHub\\Raylib-cs_PyScript\\RaylibTest.csproj",
+  "projectFilePath": "/home/donovanariesstrawhacker/Documents/GitHub/Raylib-cs_PyScript/RaylibTest.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Donovan\\.nuget\\packages\\raylib-cs\\3.1.5\\raylib-cs.3.1.5.nupkg.sha512",
-    "C:\\Users\\Donovan\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+    "/home/donovanariesstrawhacker/.nuget/packages/raylib-cs/3.1.5/raylib-cs.3.1.5.nupkg.sha512",
+    "/home/donovanariesstrawhacker/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }
