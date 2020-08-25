@@ -92,7 +92,7 @@ namespace RaylibTest.Python
         {
             FSPath = FSPath.Replace('\\', '/');
             string[] Path_Split = FSPath.Split('/');
-            string pyPath = Path_Split[Path_Split.Length - 1];
+            string pyPath = Path_Split[^1];
             if (pyPath != "/")
             {
                 pyPath = pyPath.Trim().Replace("/", "");
@@ -100,7 +100,7 @@ namespace RaylibTest.Python
 
             else
             {
-                pyPath = Path_Split[Path_Split.Length - 2];
+                pyPath = Path_Split[^2];
                 pyPath = pyPath.Trim().Remove('/');
             }
 

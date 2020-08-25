@@ -8,7 +8,7 @@ namespace RaylibTest.Queue
     {
         public string TaskType;
         public dynamic Arguments = new dynamic[] { };
-        public Priority_enum priority;
+        public Priority_enum priority = Priority_enum.Normal;
         public bool Permanent = false;
         public enum Priority_enum
         {

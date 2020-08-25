@@ -21,16 +21,18 @@ namespace RaylibTest.MainAssembly
                 path = Directory.GetCurrentDirectory() + @"\Scripts";
             }
             // Create a new FileSystem watcher
-            FileSystemWatcher Watcher = new FileSystemWatcher();
-            // Give the FileSystem watcher its attributes
-            Watcher.Path = path;
-            Watcher.NotifyFilter = NotifyFilters.LastAccess
+            FileSystemWatcher Watcher = new FileSystemWatcher
+            {
+                // Give the FileSystem watcher its attributes
+                Path = path,
+                NotifyFilter = NotifyFilters.LastAccess
                                  | NotifyFilters.LastWrite
                                  | NotifyFilters.FileName
-                                 | NotifyFilters.DirectoryName;
-            Watcher.Filter = "*.py";
-            Watcher.IncludeSubdirectories = true;
-            Watcher.InternalBufferSize = 65536;
+                                 | NotifyFilters.DirectoryName,
+                Filter = "*.py",
+                IncludeSubdirectories = true,
+                InternalBufferSize = 65536
+            };
 
             // Add event handlers.
             Watcher.Changed += OnChanged;
@@ -41,7 +43,7 @@ namespace RaylibTest.MainAssembly
             Watcher.EnableRaisingEvents = true;
 
             // Add the watcher to a list of filewatchers so that it along with the rest of them can be modified, referenced, changed or deleted at runtime
-            Program.GameClass.File_Watchers.Add(path, Watcher);
+            Program.game.File_Watchers.Add(path, Watcher);
         }
 
         //This is a manual start that will allow the python files already there to populate the list so they can be referenced initially, the AddPyScripts filewatcher and events will not add these files and so they must be added like this manually.

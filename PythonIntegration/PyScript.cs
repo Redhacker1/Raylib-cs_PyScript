@@ -10,27 +10,31 @@ namespace RaylibTest.Python
 
     class PyScript
     {
+        static readonly GamePython Python = new GamePython();
         /// <summary>
         /// Filename excluding path and file extention
         /// </summary>
-        public static string filename = "foo";
+        public static string Filename { get; } = "foo";
         /// <summary>
         /// Path Excluding filename and extention 
         /// </summary>
-        public static string path = "Bar";
+        public static string File_Path { get; } = "Bar";
 
+
+        /// <summary>
+        /// String Contents of file
+        /// </summary>
         public string Contents = "";
 
-        static readonly GamePython Python = new GamePython();
 
         /// <summary>
         /// This is only set to be able to be set so that the Hotreloader can hotreload this, it should never have to be manually reset by the user.
         /// </summary>
-        public PyObject Script_python { get; set; } = Python.Import(path, filename);
+        public PyObject Script_python { get; set; } = Python.Import(File_Path, Filename);
 
 
         // Full Filename including path and file extention
-        public string filename_full { get; } = path + "\\" + filename + ".py";
+        public string Filename_full { get; } = File_Path + "\\" + Filename + ".py";
 
 
     }

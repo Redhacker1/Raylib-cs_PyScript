@@ -27,15 +27,12 @@ namespace RaylibTest.MainAssembly
         Vector2 Resolution = new Vector2(1024, 768);
         // Window Name
         readonly string Window_name = Console.ReadLine();
-        //Contains List of Actions to run in Queue, as well as info about it (Currently Unused)
-        static private List<Task_base> Queue_List = new List<Task_base> { };
         //Initializes frame counter to keep track of when things should run...
         public short frames = 1;
 
         //Test Variables
         PythonTask Task = null;
         readonly GameIO game_IO = new GameIO();
-        readonly GamePython Python = new GamePython();
         readonly PythonAbstractions abstractions = new PythonAbstractions();
 
 
