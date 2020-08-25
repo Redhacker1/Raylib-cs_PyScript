@@ -51,7 +51,7 @@ namespace Py_embedded
 
             var lib = new[]
                 {
-                @"\Python37\Linux\lib\python3.7",
+                @"\Python37\Linux\bin",
                 @"\Python37\Linux\DLLs",
                 @"\Python37\Linux\lib\python3.7\site-packages",
                 @"\Scripts"
