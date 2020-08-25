@@ -1,4 +1,5 @@
 Python Is governed by the  Python Software Foundation License
+Pythonnet is Licensed under MIT
 
 Raylib and Raylib-cs are governed by the Zlib license and have had no modifications with the exception of raylib-cs being recompiled as raylib_cs for python compatibility.
 
