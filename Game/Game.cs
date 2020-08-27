@@ -14,19 +14,8 @@ namespace RaylibTest.MainAssembly
 
         //Global Variables
 
-
-        //Contains a Dictionary of Script paths and their contents for caching (will work out hot reloading later)
-        static public Dictionary<string, string> Scripts = new Dictionary<string, string>();
-        // Scripts run once and known to be safe to run again without error handling
-        static public List<string> Safe_Scripts = new List<string>();
-        // Dictionary of FileWatchers
-        public Dictionary<string, System.IO.FileSystemWatcher> File_Watchers = new Dictionary<string , System.IO.FileSystemWatcher>();
-        // FPS limit
-        int FPS_Limit = 500;
-        //Resolution
-        Vector2 Resolution = new Vector2(1024, 768);
         // Window Name
-        readonly string Window_name = Console.ReadLine();
+        readonly string Window_name = "Hello";
         //Initializes frame counter to keep track of when things should run...
         public short frames = 1;
 
@@ -34,14 +23,25 @@ namespace RaylibTest.MainAssembly
         PythonTask Task = null;
         readonly GameIO game_IO = new GameIO();
         readonly PythonAbstractions abstractions = new PythonAbstractions();
+        G_vars Global_Variables = Program.Global_Variables;
 
 
         public void Startup()
         {
+            if (Global_Variables == null)
+            {
+                Global_Variables = new G_vars();
+                Program.Global_Variables = Global_Variables;
+            }
             //Creates the window
-            Raylib.InitWindow((int)Resolution.X, (int)Resolution.Y, Window_name);
+            Raylib.InitWindow((int)G_vars.Resolution.X, (int)G_vars.Resolution.Y, Window_name);
             // Sets the Target FPS to FPS_Limit
-            Raylib.SetTargetFPS(FPS_Limit);
+            Raylib.SetTargetFPS(G_vars.FPS_Limit);
+
+            if (G_vars.FPS_Limit == 0)
+            {
+                G_vars.FPS_Limit = 144;
+            }
 
             //Raylib.InitAudioDevice();
             // Creates a new reference to Python Abstraction
@@ -75,7 +75,7 @@ namespace RaylibTest.MainAssembly
                 //Begins Drawing the frame
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.WHITE);
-                Raylib.DrawFPS((int)Resolution.X/2, (int)Resolution.Y/2);
+                Raylib.DrawFPS((int)G_vars.Resolution.X/2, (int)G_vars.Resolution.Y/2);
 
                 Task.Run_Task();
             }
@@ -96,7 +96,7 @@ namespace RaylibTest.MainAssembly
             {
             }
             // The end of a full frame cycle (about 1 second if able to hit the target frame limit) 
-            if (FPS_Limit <= frames)
+            if (G_vars.FPS_Limit <= frames)
             {
                 //Resets the frame counter
                 frames = 0;

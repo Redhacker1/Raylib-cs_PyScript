@@ -9,8 +9,9 @@ namespace RaylibTest.Python
     class GamePython
     {
         public readonly GameIO IOlib = new GameIO();
+        private readonly G_vars Global_Variables = Program.Global_Variables;
 
-
+        PyScript a = new PyScript();
 
         public PyObject Import(string location, string Scriptname)
         {
@@ -25,15 +26,15 @@ namespace RaylibTest.Python
         public void Python_Script_Run_Static(string Script)
         {
             //TODO: Disable Script With timed Log Error if Exception is thrown, Otherwise disable Exception Handling and cache the file. Remove the file from cache and repeat when the file has been edited (Also Probably a good Idea to reinitialize all entities that depended on it). Edit: Temporary Idea of behavior, Still need to reset this on file edit!
-            if (false == Game.Scripts.ContainsKey(Script))
+            if (false == G_vars.Scripts.ContainsKey(Script))
             {
                 try
                 {
                     string code = IOlib.Read_file(Script);
                     PythonEngine.Exec(code);
-                    if (false == Game.Scripts.ContainsKey(Script))
+                    if (false == G_vars.Scripts.ContainsKey(Script))
                     {
-                        Game.Scripts.Add(Script, code);
+                        G_vars.Scripts.Add(Script, code);
                     }
                     return;
                 }
@@ -47,7 +48,7 @@ namespace RaylibTest.Python
             }
             else
             {
-                PythonEngine.Exec(Game.Scripts[Script]);
+                PythonEngine.Exec(G_vars.Scripts[Script]);
                 return;
             }
         }
@@ -60,18 +61,18 @@ namespace RaylibTest.Python
         public void Python_Script_unified(string Script)
         {
             // Currently Have not implemented support of External (Out of Context area scripts)
-            if (false == Game.Scripts.ContainsKey(Script))
+            if (false == G_vars.Scripts.ContainsKey(Script))
             {
                 Console.WriteLine("Currently Illegal operation, Will be implemented later");
                 throw new NotImplementedException();
             }
             // Go down this path if the script has not been proven to be without syntax errors
-            else if (false ==  Game.Safe_Scripts.Contains(Script)) 
+            else if (false == G_vars.Safe_Scripts.Contains(Script)) 
             {
                 try
                 {
-                    PythonEngine.Exec(Game.Scripts[Script]);
-                    Game.Safe_Scripts.Add(Script);
+                    PythonEngine.Exec(G_vars.Scripts[Script]);
+                    G_vars.Safe_Scripts.Add(Script);
                     return;
                 }
                 catch (PythonException Ex)
@@ -84,7 +85,7 @@ namespace RaylibTest.Python
             }
             else
             {
-                PythonEngine.Exec(Game.Scripts[Script]);
+                PythonEngine.Exec(G_vars.Scripts[Script]);
             }
         }
 

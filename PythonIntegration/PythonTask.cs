@@ -9,7 +9,7 @@ namespace RaylibTest.Python
 {
     class PythonTask : Task_base
     {
-        GamePython python_api = new GamePython();
+        readonly GamePython python_api = new GamePython();
         PyObject a = PythonEngine.ImportModule("Scripts" + "." + "Main");
         public override dynamic Run_Task()
         {

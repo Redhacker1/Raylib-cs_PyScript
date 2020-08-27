@@ -1,41 +1,74 @@
 ﻿using Python.Runtime;
-using RaylibTest.Python;
+using RaylibTest.MainAssembly;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace RaylibTest.Python
 {
-
     class PyScript
     {
-        static readonly GamePython Python = new GamePython();
-        /// <summary>
-        /// Filename excluding path and file extention
-        /// </summary>
-        public static string Filename { get; } = "foo";
-        /// <summary>
-        /// Path Excluding filename and extention 
-        /// </summary>
-        public static string File_Path { get; } = "Bar";
+        readonly GameIO IOlib = new GameIO();
+
+        public string Contents;
+        public string Filename;
+        public string shortPath;
+        public string FullPath;
+        public PyObject Script;
+
+        public void Setter(string Path) 
+        {
+            FullPath = Path;
+            string[] File_Name_and_Path = SplitPath(Path);
+            shortPath = File_Name_and_Path[0];
+            Filename = File_Name_and_Path[1];
+            IOlib.Read_file(FullPath);
+            Contents = IOlib.Read_file(FullPath);
+            //Console.WriteLine(FSpath_to_PyPath(Path));
+
+        }
+
+        private string[] SplitPath(string File_Path)
+        {
+            File_Path = File_Path.Replace("\\", "/");
+            string[] Directories_and_file = File_Path.Split('/');
+            string Subdirectory = string.Empty;
+
+            for (int index = 0; index < Directories_and_file.Length; index++)
+            {
+                string Directory = Directories_and_file[index];
+                if (Subdirectory == string.Empty)
+                {
+                    Subdirectory = Directory;
+                }
+                else
+                {
+                    Subdirectory = Subdirectory + "/" + Directory;
+                }
+            }
+            string file_Name = Directories_and_file.Last();
+            Subdirectory = Subdirectory.Replace(file_Name, "");
+
+            return new string[] { Subdirectory, file_Name };
+        }
+
+        private string FSpath_to_PyPath(string FSPath)
+        {
+            FSPath = FSPath.Replace('\\', '/');
+            string[] Path_Split = FSPath.Split('/');
+            string pyPath = Path_Split[^1];
+            if (pyPath != "/")
+            {
+                pyPath = pyPath.Trim().Replace("/", "");
+            }
+
+            else
+            {
+                pyPath = Path_Split[^2];
+                pyPath = pyPath.Trim().Remove('/');
+            }
 
 
-        /// <summary>
-        /// String Contents of file
-        /// </summary>
-        public string Contents = "";
-
-
-        /// <summary>
-        /// This is only set to be able to be set so that the Hotreloader can hotreload this, it should never have to be manually reset by the user.
-        /// </summary>
-        public PyObject Script_python { get; set; } = Python.Import(File_Path, Filename);
-
-
-        // Full Filename including path and file extention
-        public string Filename_full { get; } = File_Path + "\\" + Filename + ".py";
-
-
+            return pyPath;
+        }
     }
 }
