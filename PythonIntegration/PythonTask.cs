@@ -4,33 +4,25 @@ using System.IO;
 using System.Text;
 using RaylibTest.Queue;
 using Python.Runtime;
+using RaylibTest.MainAssembly;
 
 namespace RaylibTest.Python
 {
     class PythonTask : Task_base
     {
-        readonly GamePython python_api = new GamePython();
-        PyObject a = PythonEngine.ImportModule("Scripts" + "." + "Main");
+        PyScript a;
         public override dynamic Run_Task()
         {
-            if (TaskType == "Run Script (Static)")
+            a = G_vars.Scripts[Arguments[0]];
+
+            if (TaskType == "Run Script")
             {
-                python_api.Python_Script_Run_Static(Arguments[0]);
-                return null;
-            }
-            else if (TaskType == "Run Script (Dynamic)")
-            {
-                python_api.Python_Script_Run_Dynamic(Arguments[0]);
-                return null;
-            }
-            else if (TaskType == "Run Script (Experimental)")
-            {
-                python_api.Python_Script_unified(Arguments[0]);
+                a.RunScript();
                 return null;
             }
             else if (TaskType == "Run Function")
             {
-                python_api.PythonFunction(Arguments[0],a);
+                a.PythonFunction(Arguments[1]);
                 return null;
             }
             else

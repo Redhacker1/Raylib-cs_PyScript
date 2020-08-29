@@ -9,145 +9,222 @@ namespace RaylibTest.Python
     class GamePython
     {
         public readonly GameIO IOlib = new GameIO();
-        private readonly G_vars Global_Variables = Program.Global_Variables;
 
-        PyScript a = new PyScript();
-
-        public PyObject Import(string location, string Scriptname)
+        private void Create_Linux_EnvVariables(string custom_PATH)
         {
-            return PythonEngine.ImportModule(FSpath_to_PyPath(location) + "." + Scriptname);
+            // Sets the path to python install
+            string pathToPython = @"\Python37\Linux";
+            string path = pathToPython + ";";
+            Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
+
+            var lib = new[]
+                {
+                @"\Python37\Linux\bin",
+                @"\Python37\Linux\DLLs",
+                @"\Python37\Linux\lib\python3.7\site-packages",
+                @"\Scripts"
+                };
+
+            if (custom_PATH != "")
+            {
+                lib = new[]
+                {
+                @"\Python37\Linux\lib\python3.7",
+                @"\Python37\Linux\DLLs",
+                @"\Python37\Linux\lib\python3.7\site-packages",
+                @"\Scripts",
+                custom_PATH
+                };
+            }
+
+            string paths = string.Join("; ", lib);
+            Environment.SetEnvironmentVariable("PYTHONPATH", paths, EnvironmentVariableTarget.Process);
         }
 
-        /// <summary>
-        /// Depreciated, Is a remenant from before FileSystemWatcher was used to achieve hotreloading and this was the faster but static pathway for python scripts
-        /// Left For reference purposes and in the case you do want to use an OOC File (Out of context file)
-        /// </summary>
-        /// <param name="Script"></param>
-        public void Python_Script_Run_Static(string Script)
+        private void Create_Windows_EnvVariables(string custom_PATH)
         {
-            //TODO: Disable Script With timed Log Error if Exception is thrown, Otherwise disable Exception Handling and cache the file. Remove the file from cache and repeat when the file has been edited (Also Probably a good Idea to reinitialize all entities that depended on it). Edit: Temporary Idea of behavior, Still need to reset this on file edit!
-            if (false == G_vars.Scripts.ContainsKey(Script))
+            string pathToPython = Environment.CurrentDirectory + @"\Python37\Windows";
+            string path = pathToPython + ";";
+            Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
+
+            var lib = new[]
+                {
+                pathToPython + @"\Lib",
+                pathToPython + @"\DLLs",
+                pathToPython + @"\Lib\site-packages",
+                Environment.CurrentDirectory + @"\Scripts"
+                };
+
+            if (custom_PATH != "")
             {
-                try
+                lib = new[]
                 {
-                    string code = IOlib.Read_file(Script);
-                    PythonEngine.Exec(code);
-                    if (false == G_vars.Scripts.ContainsKey(Script))
-                    {
-                        G_vars.Scripts.Add(Script, code);
-                    }
-                    return;
-                }
-                catch (PythonException Ex)
+                pathToPython + @"\Lib",
+                pathToPython + @"\DLLs",
+                pathToPython + @"\Lib\site-packages",
+                Environment.CurrentDirectory + @"\Scripts",
+                custom_PATH
+                };
+            }
+
+            string paths = string.Join("; ", lib);
+            Environment.SetEnvironmentVariable("PYTHONPATH", paths, EnvironmentVariableTarget.Process);
+        }
+
+        private string FSpath_to_PyPath(string FSPath)
+        {
+            string Good_path = string.Empty;
+            string parent_folder = string.Empty;
+            foreach (string valid_path in G_vars.Python_Script_Directories)
+            {
+                if (FSPath.Contains(valid_path))
                 {
-                    //TODO: Log Script Error with time interval as well as print to a console
-                    Console.WriteLine(Ex.Message);
-                    Console.WriteLine("Error!");
-                    return;
+                    Good_path = valid_path;
+                    parent_folder = valid_path.Replace("\\", "/");
+                    string[] parent_folder_intermediate = parent_folder.Split("/");
+                    parent_folder = parent_folder_intermediate[parent_folder_intermediate.Length - 1];
+                    break;
                 }
+            }
+            if (Good_path == string.Empty)
+            {
+                return null;
             }
             else
             {
-                PythonEngine.Exec(G_vars.Scripts[Script]);
-                return;
+                string pypath = FSPath.Replace(Good_path, "");
+                pypath = pypath.Replace("\\", "/");
+                pypath = pypath.Replace("/", ".");
+                pypath = pypath.Replace(".py", "");
+                pypath = parent_folder + pypath;
+                return pypath;
             }
         }
 
-        /// <summary>
-        /// The next step, this should combine the speed of the Static Python pathway due to the caching with the hot reload ability of the Dynamic Pathway. 
-        /// Currently does not support OOC (Out of context) Scripts (scripts out of it's search paths)
-        /// </summary>
-        /// <param name="Script">The Path to the script</param>
-        public void Python_Script_unified(string Script)
+        public void Initpython(string custom_PATH = "")
         {
-            // Currently Have not implemented support of External (Out of Context area scripts)
-            if (false == G_vars.Scripts.ContainsKey(Script))
+            if (Environment.OSVersion.ToString().Contains("Unix"))
             {
-                Console.WriteLine("Currently Illegal operation, Will be implemented later");
-                throw new NotImplementedException();
-            }
-            // Go down this path if the script has not been proven to be without syntax errors
-            else if (false == G_vars.Safe_Scripts.Contains(Script)) 
-            {
-                try
-                {
-                    PythonEngine.Exec(G_vars.Scripts[Script]);
-                    G_vars.Safe_Scripts.Add(Script);
-                    return;
-                }
-                catch (PythonException Ex)
-                {
-                    //TODO: Log Script Error with time interval as well as print to a console
-                    Console.WriteLine(Ex.Message);
-                    Console.WriteLine("Error!");
-                    return;
-                }
+                Console.WriteLine("IsLinux");
+                Create_Linux_EnvVariables(custom_PATH);
             }
             else
             {
-                PythonEngine.Exec(G_vars.Scripts[Script]);
+                Create_Windows_EnvVariables(custom_PATH);
             }
+            PythonEngine.Initialize();
+
         }
 
-        /// <summary>
-        /// Runs a function, Highly experimental
-        /// </summary>
-        /// <param name="FuncName"></param>
-        /// <param name="Script"></param>
-        public void PythonFunction(string FuncName, PyObject Script)
+        public void TerminatePython()
         {
-            //ScriptLocation = FSpath_to_PyPath(ScriptLocation);
-            PythonEngine.ReloadModule(Script);
-            Script.InvokeMethod(FuncName);
-
-        }
-        /// <summary>
-        /// Converts a given path (from already predetermined paths made note)
-        /// </summary>
-        /// <param name="FSPath"></param>
-        /// <returns></returns>
-        string FSpath_to_PyPath(string FSPath)
-        {
-            FSPath = FSPath.Replace('\\', '/');
-            string[] Path_Split = FSPath.Split('/');
-            string pyPath = Path_Split[^1];
-            if (pyPath != "/")
-            {
-                pyPath = pyPath.Trim().Replace("/", "");
-            }
-
-            else
-            {
-                pyPath = Path_Split[^2];
-                pyPath = pyPath.Trim().Remove('/');
-            }
-
-
-            return pyPath;
-        }
-
-        /// <summary>
-        /// Depreciated, Is a remenant from before FileSystemWatcher was used to achieve hotreloading, This is the script that was slower, but it hotreloads, it does not make use of caching and instead reads the file over and over
-        /// Left For reference purposes and in the case you do want to use an OOC File (Out of context file)
-        /// </summary>
-        /// <param name="Script"></param>
-        public void Python_Script_Run_Dynamic(string Script)
-        {
-            //TODO: Use Filewatch and events for hotreloading, allowing us to cache the script like in the static version of this function.
-
             try
             {
-                string a = IOlib.Read_file(Script);
-                PythonEngine.Exec(a);
-                return;
+                PythonEngine.Shutdown();
             }
-            catch (PythonException Ex)
+            catch (PythonException Exception)
             {
-                //TODO: Log Script Error with time interval as well as print to a console
-                Console.WriteLine(Ex.Message);
-                Console.WriteLine("Error!");
-                return;
+                Console.WriteLine(Exception.Message);
             }
+
+        }
+
+        public int Python_Console()
+        {
+
+            int i = Runtime.Py_Main(0, new string[] { });
+            return i;
+
+        }
+
+        //This is a manually allow the python files already there to populate the list so they can be referenced initially, the AddPyScripts filewatcher and events will not add these files and so they must be added like this manually.
+        public void Add_Py_Scripts()
+        {
+            foreach (string path in G_vars.Python_Script_Directories)
+            {
+                foreach (string file in Directory.GetFiles(path, "*.py", SearchOption.AllDirectories))
+                {
+                    PyScript Script_c = new PyScript();
+                    Script_c.Setter(file);
+                    G_vars.Scripts[Script_c.ModuleName] = Script_c;
+                }
+
+            }
+        }
+
+        public void Track_Py_Scripts()
+        {
+            foreach (string path in G_vars.Python_Script_Directories)
+            {
+                // Create a new FileSystem watcher
+                FileSystemWatcher Watcher = new FileSystemWatcher
+                {
+                    // Give the FileSystem watcher its attributes
+                    Path = path,
+                    NotifyFilter = NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.DirectoryName,
+                    Filter = "*.py",
+                    IncludeSubdirectories = true,
+                    InternalBufferSize = 65536
+                };
+
+                // Add event handlers.
+                Watcher.Changed += OnChanged;
+                Watcher.Created += OnAdded;
+                Watcher.Renamed += OnRenamed;
+
+                // Begin Watching
+                Watcher.EnableRaisingEvents = true;
+
+                // Add the watcher to a list of filewatchers so that it along with the rest of them can be modified, referenced, changed or deleted at runtime
+                G_vars.File_Watchers.Add(path, Watcher);
+            }
+        }
+
+        public void InitPyFS()
+        {
+            Add_Py_Scripts();
+            Track_Py_Scripts();
+            Console.WriteLine("Script FS initialized Python now ready to be used");
+
+        }
+
+        private void OnChanged(object source, FileSystemEventArgs e)
+        {
+            // Set the key of the dictionary referring to the script to reflect the new changes made to the file. Also removes the "Safe Script" tag from the script due to it now able to have syntax errors in the script
+             string ModuleName = FSpath_to_PyPath(e.FullPath);
+            G_vars.Scripts[ModuleName].SafeScript = false;
+            G_vars.Scripts[ModuleName].Contents = IOlib.Read_file(e.FullPath);
+            G_vars.Scripts[ModuleName].ReloadModule();
+            Console.WriteLine("Changes to {0} have been reflected", ModuleName);
+
+        }
+
+        private void OnAdded(object source, FileSystemEventArgs e)
+        {
+            // Add a new key to the dictionary and set the value to be the value to be the contents of the script file.
+            PyScript Script_c = new PyScript();
+            Script_c.Setter(e.FullPath);
+            G_vars.Scripts[Script_c.ModuleName] = Script_c;
+            Console.WriteLine("Script {0} has been added", Script_c.ModuleName);
+
+        }
+
+        private void OnRenamed(object source, RenamedEventArgs e)
+        {
+            // Reimports the file and removes the old one
+            string ModuleName = FSpath_to_PyPath(e.OldFullPath);
+            G_vars.Scripts.Remove(ModuleName);
+
+            PyScript Script_c = new PyScript();
+            Script_c.Setter(e.FullPath);
+            G_vars.Scripts[Script_c.ModuleName] = Script_c;
+            Console.WriteLine("Script {0} has been Reimported", Script_c.ModuleName);
+
         }
     }
 }

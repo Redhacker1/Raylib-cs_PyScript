@@ -1,11 +1,6 @@
 ﻿using RaylibTest.Python;
-using RaylibTest.Queue;
-using Python.Runtime;
 using Raylib_cs;
-using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace RaylibTest.MainAssembly
 {
@@ -13,6 +8,7 @@ namespace RaylibTest.MainAssembly
     {
 
         //Global Variables
+
 
         // Window Name
         readonly string Window_name = "Hello";
@@ -22,17 +18,11 @@ namespace RaylibTest.MainAssembly
         //Test Variables
         PythonTask Task = null;
         readonly GameIO game_IO = new GameIO();
-        readonly PythonAbstractions abstractions = new PythonAbstractions();
-        G_vars Global_Variables = Program.Global_Variables;
+        readonly GamePython python = new GamePython();
 
 
         public void Startup()
         {
-            if (Global_Variables == null)
-            {
-                Global_Variables = new G_vars();
-                Program.Global_Variables = Global_Variables;
-            }
             //Creates the window
             Raylib.InitWindow((int)G_vars.Resolution.X, (int)G_vars.Resolution.Y, Window_name);
             // Sets the Target FPS to FPS_Limit
@@ -40,17 +30,14 @@ namespace RaylibTest.MainAssembly
 
             if (G_vars.FPS_Limit == 0)
             {
-                G_vars.FPS_Limit = 144;
+                G_vars.FPS_Limit = Raylib.GetFPS();
             }
 
-            //Raylib.InitAudioDevice();
-            // Creates a new reference to Python Abstraction
-
             //Initializes python
-            abstractions.Initpython();
+            python.Initpython();
             Task = new PythonTask();
-            game_IO.InitPyFS();
-            Task.Arguments = new dynamic[] {"Main"};
+            python.InitPyFS();
+            Task.Arguments = new dynamic[] { @"Scripts.Main", "Main"};
             Task.TaskType = "Run Function";
 
             while (!Raylib.WindowShouldClose())
