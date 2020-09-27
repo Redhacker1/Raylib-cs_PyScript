@@ -12,7 +12,7 @@ namespace RaylibTest.MainAssembly
 
 
         // Window Name
-        readonly string Window_name = "Hello";
+        readonly string Window_name = "Big Homo";
         //Initializes frame counter to keep track of when things should run...
         public short frames = 1;
 

@@ -146,6 +146,11 @@ namespace RaylibTest.Python
             {
                 foreach (string file in Directory.GetFiles(path, "*.py", SearchOption.AllDirectories))
                 {
+                    // DELETEME: ~RedSkittleFox
+#if DEBUG
+                    Console.WriteLine("Currently processing file: " + file);
+#endif
+
                     PyScript Script_c = new PyScript();
                     Script_c.Setter(file);
                     G_vars.Scripts[Script_c.ModuleName] = Script_c;

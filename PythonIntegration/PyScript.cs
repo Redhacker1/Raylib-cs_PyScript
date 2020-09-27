@@ -29,10 +29,15 @@ namespace RaylibTest.Python
             Contents = IOlib.Read_file(FullPath);
             try
             {
-                Script = PythonEngine.ImportModule(FSpath_to_PyPath(Path));
+                Script = Py.Import(FSpath_to_PyPath(Path));
+                //Script = PythonEngine.ImportModule(FSpath_to_PyPath(Path));
             }
             catch
             {
+                // RedSkittleFox: Get name of the module that is being loaded in case we charsed:
+#if DEBUG
+                Console.WriteLine("Loading module: " + FSpath_to_PyPath(Path));
+#endif
                 Console.WriteLine("No module Found!");
             }
 
@@ -139,6 +144,7 @@ namespace RaylibTest.Python
                     pyArgs[x] = pyarg;
                 }
 
+                // var Return_Value = Script.Invoke(pyArgs);
                 var Return_Value = Script.InvokeMethod(FuncName, pyArgs);
                 return Return_Value;
             }

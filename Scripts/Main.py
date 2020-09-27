@@ -6,6 +6,7 @@ import time
 Raylib.DrawText("ERROR!", 0,100, 60, Color.RED)
 
 def Main():
+	print("Hello")
 	string_1 = "800"
 	String_2 = "0000000000000000"
 	string_item = string_1 + String_2
