@@ -7,45 +7,40 @@ namespace RaylibTest.MainAssembly
 {
     class Game
     {
-
-        //Global Variables
-
-
         // Window Name
         readonly string Window_name = "Big Homo";
-        //Initializes frame counter to keep track of when things should run...
-        public short frames = 1;
+        // Initializes frame counter to keep track of when things should run...
+        public UInt32 frames = 0u; // Fox: Start from 0
 
-        //Test Variables
+        // Test Variables
         PythonTask Task = null;
         readonly GameIO game_IO = new GameIO();
         readonly GamePython python = new GamePython();
 
-
         public void Startup()
         {
-            //Creates the window
+            // Creates the window
             Raylib.InitWindow((int)G_vars.Resolution.X, (int)G_vars.Resolution.Y, Window_name);
             // Sets the Target FPS to FPS_Limit
             Raylib.SetTargetFPS(G_vars.FPS_Limit);
 
-            //Initializes python
+            // Initializes python
             python.Initpython();
-            Task = new PythonTask();
             python.InitPyFS();
+
+            // Create task and execute Main() in python
+            Task = new PythonTask();
             Task.Arguments = new dynamic[] { @"Scripts.Main", "Main", null };
             Task.TaskType = "Run Function";
 
-
             while (!Raylib.WindowShouldClose())
             {
-
                 //Begins Drawing the frame
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.WHITE);
 
                 //Increments the frame counter
-                frames++;
+                ++frames; // Fox: Do preincrementation, it's cheaper
                 Gameloop();
 
                 // Stops Drawing
@@ -58,13 +53,9 @@ namespace RaylibTest.MainAssembly
 
         void Gameloop()
         {
-            // Per frame Logic goes here to keep it organized
-            if (frames >= 1)
-            {
-                Raylib.DrawFPS((int)G_vars.Resolution.X/2, (int)G_vars.Resolution.Y/2);
+            Raylib.DrawFPS((int)G_vars.Resolution.X / 2, (int)G_vars.Resolution.Y / 2);
+            var answer = Task.Run_Task();
 
-                var answer = Task.Run_Task();
-            }
             // Every other frame
             if (frames % 2 == 0)
             {
