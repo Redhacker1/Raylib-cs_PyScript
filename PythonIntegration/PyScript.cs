@@ -122,18 +122,37 @@ namespace RaylibTest.Python
             }
         }
 
-        public void PythonFunction(string FuncName)
+        public dynamic PythonFunction(string FuncName, dynamic[] args)
         {
-            var item = Script.InvokeMethod(FuncName);
+            dynamic item;
+            if (args == null)
+            {
+                item = Script.InvokeMethod(FuncName);
+                return item;
+            }
+            else
+            {
+                PyObject[] pyArgs = new PyObject[args.Length];
+                for (int x = 0; x < args.Length; x++)
+                {
+                    var pyarg = PyObject.FromManagedObject(args[x]);
+                    pyArgs[x] = pyarg;
+                }
+
+                var Return_Value = Script.InvokeMethod(FuncName, pyArgs);
+                return Return_Value;
+            }
+
         }
 
         public dynamic ToCSharp(PyObject variable)
         {
             string Pytype = variable.GetPythonType().ToString();
-            if (Pytype == "<class 'int'>" || Pytype == "<class 'long'>")
+            if (Pytype == "<class 'System.Int32'>" || Pytype == "<class 'int'>")
             {
                 if (variable.As<long>() >= int.MaxValue)
                 {
+                    
                     var CSvar = variable.As<long>();
                     return CSvar;
                 }
@@ -144,18 +163,25 @@ namespace RaylibTest.Python
                 }
 
             }
-            else if (Pytype == "<class 'short'>")
+
+            else if (Pytype == "<class 'System.Int64'>")
+            {
+                var CSvar = variable.As<long>();
+                return CSvar;
+            }
+
+            else if (Pytype == "<class 'System.Int16'>" || Pytype == "<class 'short'>")
             {
                 var CSvar = variable.As<short>();
                 return CSvar;
             }
 
-            else if (Pytype == "<class 'str'>")
+            else if (Pytype == "<class 'System.String'>" || Pytype == "<class 'str'>")
             {
                 var CSvar = variable.As<string>();
                 return CSvar;
             }
-            else if (Pytype == "<class 'bool'>")
+            else if (Pytype == "<class 'System.Boolean'>" || Pytype == "<class 'bool'>")
             {
                 var CSvar = variable.As<bool>();
                 return CSvar;
@@ -164,7 +190,7 @@ namespace RaylibTest.Python
             {
                 return null;
             }
-            else if (Pytype == "<class 'list'>")
+            else if (Pytype == "<class 'System.Object[]'>" || Pytype.Contains("System.Collections.Generic.0") || Pytype == "<class 'list'>")
             {
                 List<dynamic> list_var = new List<dynamic>();
                 foreach (PyObject item in variable)
@@ -177,6 +203,8 @@ namespace RaylibTest.Python
 
             return null;
         }
+
+
         public void ReloadModule()
         {
             var pylock = PythonEngine.AcquireLock();

@@ -22,7 +22,7 @@ namespace RaylibTest.MainAssembly
         // Dictionary of FileWatchers
         static public Dictionary<string, FileSystemWatcher> File_Watchers = new Dictionary<string, FileSystemWatcher>();
         // FPS limit
-        static public int FPS_Limit = 500;
+        static public int FPS_Limit = 0;
         //Resolution
         static public Vector2 Resolution = new Vector2(1024, 768);
     }

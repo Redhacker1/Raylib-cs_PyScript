@@ -1,6 +1,7 @@
 ﻿using RaylibTest.Python;
 using Raylib_cs;
 using System.Collections.Generic;
+using System;
 
 namespace RaylibTest.MainAssembly
 {
@@ -28,20 +29,21 @@ namespace RaylibTest.MainAssembly
             // Sets the Target FPS to FPS_Limit
             Raylib.SetTargetFPS(G_vars.FPS_Limit);
 
-            if (G_vars.FPS_Limit == 0)
-            {
-                G_vars.FPS_Limit = Raylib.GetFPS();
-            }
-
             //Initializes python
             python.Initpython();
             Task = new PythonTask();
             python.InitPyFS();
-            Task.Arguments = new dynamic[] { @"Scripts.Main", "Main"};
+            Task.Arguments = new dynamic[] { @"Scripts.Main", "Main", new dynamic[] {true} };
             Task.TaskType = "Run Function";
+
 
             while (!Raylib.WindowShouldClose())
             {
+
+                //Begins Drawing the frame
+                Raylib.BeginDrawing();
+                Raylib.ClearBackground(Color.WHITE);
+
                 //Increments the frame counter
                 frames++;
                 Gameloop();
@@ -59,12 +61,9 @@ namespace RaylibTest.MainAssembly
             // Per frame Logic goes here to keep it organized
             if (frames >= 1)
             {
-                //Begins Drawing the frame
-                Raylib.BeginDrawing();
-                Raylib.ClearBackground(Color.WHITE);
                 Raylib.DrawFPS((int)G_vars.Resolution.X/2, (int)G_vars.Resolution.Y/2);
 
-                Task.Run_Task();
+                var answer = Task.Run_Task();
             }
             // Every other frame
             if (Is_Divisible(frames, 2))

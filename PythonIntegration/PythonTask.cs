@@ -10,20 +10,22 @@ namespace RaylibTest.Python
 {
     class PythonTask : Task_base
     {
-        PyScript a;
+        PyScript Script_Module;
         public override dynamic Run_Task()
         {
-            a = G_vars.Scripts[Arguments[0]];
+            Script_Module = G_vars.Scripts[Arguments[0]];
 
             if (TaskType == "Run Script")
             {
-                a.RunScript();
+                Script_Module.RunScript();
                 return null;
             }
             else if (TaskType == "Run Function")
             {
-                a.PythonFunction(Arguments[1]);
-                return null;
+                dynamic returnvalue = Script_Module.PythonFunction(Arguments[1], Arguments[2]);
+                returnvalue = Script_Module.ToCSharp(returnvalue);
+                //Console.WriteLine(returnvalue.ToString());
+                return returnvalue;
             }
             else
             {
