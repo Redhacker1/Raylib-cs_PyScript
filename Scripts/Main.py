@@ -1,17 +1,25 @@
 import clr
-clr.AddReference('raylib_cs')
-from Raylib_cs import *
+# clr.AddReference('raylib_cs')
+
+# Raylib is undefined
+# from Raylib_cs import *
+
 import time
 
-Raylib.DrawText("ERROR!", 0,100, 60, Color.RED)
+# RedSkittleFox 
+import sys
 
-def Main():
+# Undefined
+# Raylib.DrawText("ERROR!", 0,100, 60, Color.RED)
+
+# RedSkittleFox: Main missing argv
+def Main(argv):
 	print("Hello")
-	string_1 = "800"
-	String_2 = "0000000000000000"
-	string_item = string_1 + String_2
+	# string_1 = "800"
+	# String_2 = "0000000000000000"
+	# string_item = string_1 + String_2
 
-	Raylib.DrawText(string_item, 0,0, 60, Color.GREEN)
-
+    # Undefined
+	# Raylib.DrawText(string_item, 0,0, 60, Color.GREEN)
 
 
