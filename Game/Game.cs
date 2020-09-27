@@ -66,19 +66,19 @@ namespace RaylibTest.MainAssembly
                 var answer = Task.Run_Task();
             }
             // Every other frame
-            if (Is_Divisible(frames, 2))
+            if (frames % 2 == 0)
             {
             }
             // Every 5 Frames
-            if (Is_Divisible(frames, 5))
+            if (frames % 5 == 0)
             {
             }
             // Every 10 frames
-            if (Is_Divisible(frames, 10))
+            if (frames % 10 == 0)
             {
             }
             // Every 30 frames
-            if (Is_Divisible(frames, 30))
+            if (frames % 30 == 0)
             {
             }
             // The end of a full frame cycle (about 1 second if able to hit the target frame limit) 
@@ -87,12 +87,6 @@ namespace RaylibTest.MainAssembly
                 //Resets the frame counter
                 frames = 0;
             }
-        }
-
-        // Checks to see if the number is divisable by another number
-        public bool Is_Divisible(short number, short divisible_by)
-        {
-            return (number % divisible_by) == 0;
         }
     } 
 }
