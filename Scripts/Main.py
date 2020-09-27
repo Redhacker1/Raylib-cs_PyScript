@@ -13,7 +13,7 @@ import sys
 # Raylib.DrawText("ERROR!", 0,100, 60, Color.RED)
 
 # RedSkittleFox: Main missing argv
-def Main(argv):
+def Main():
 	print("Hello")
 	# string_1 = "800"
 	# String_2 = "0000000000000000"

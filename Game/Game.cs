@@ -33,7 +33,7 @@ namespace RaylibTest.MainAssembly
             python.Initpython();
             Task = new PythonTask();
             python.InitPyFS();
-            Task.Arguments = new dynamic[] { @"Scripts.Main", "Main", new dynamic[] {true} };
+            Task.Arguments = new dynamic[] { @"Scripts.Main", "Main", null };
             Task.TaskType = "Run Function";
 
 

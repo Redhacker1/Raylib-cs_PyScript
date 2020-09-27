@@ -129,13 +129,13 @@ namespace RaylibTest.Python
 
         public dynamic PythonFunction(string FuncName, dynamic[] args)
         {
-            dynamic item;
-            if (args == null)
+            // RedSkittleFox: Invoke method without using args if args == null :P
+            if(args == null)
             {
-                item = Script.InvokeMethod(FuncName);
-                return item;
+                // var Return_Value = Script.Invoke(pyArgs);
+                return Script.InvokeMethod(FuncName);
             }
-            else
+            else 
             {
                 PyObject[] pyArgs = new PyObject[args.Length];
                 for (int x = 0; x < args.Length; x++)
@@ -145,10 +145,8 @@ namespace RaylibTest.Python
                 }
 
                 // var Return_Value = Script.Invoke(pyArgs);
-                var Return_Value = Script.InvokeMethod(FuncName, pyArgs);
-                return Return_Value;
+                return Script.InvokeMethod(FuncName, pyArgs);
             }
-
         }
 
         public dynamic ToCSharp(PyObject variable)

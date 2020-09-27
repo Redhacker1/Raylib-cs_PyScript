@@ -23,6 +23,7 @@ namespace RaylibTest.Python
             else if (TaskType == "Run Function")
             {
                 dynamic returnvalue = Script_Module.PythonFunction(Arguments[1], Arguments[2]);
+
                 returnvalue = Script_Module.ToCSharp(returnvalue);
                 //Console.WriteLine(returnvalue.ToString());
                 return returnvalue;
