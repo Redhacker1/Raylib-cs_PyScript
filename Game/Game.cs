@@ -31,8 +31,8 @@ namespace RaylibTest.MainAssembly
 
             // Create task and execute Main() in python
             Task = new PythonTask();
-            Task.Arguments = new dynamic[] {@"Scripts.Main", "Main", null};
-            Task.TaskType = "Run Function";
+            Task.Arguments = new dynamic[] {"Scripts.Main", null};
+            Task.TaskType = "Run Script";
 
             while (!Raylib.WindowShouldClose())
             {

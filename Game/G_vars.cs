@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace RaylibTest.MainAssembly
         //Global Variables
 
         //
-        static readonly string Executable_Path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static readonly string Executable_Path = Environment.CurrentDirectory;
 
         // List of valid paths for python scripts
         public static string[] Python_Script_Directories = {Executable_Path + @"\Scripts"};

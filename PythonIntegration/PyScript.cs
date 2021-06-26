@@ -28,16 +28,16 @@ namespace RaylibTest.Python
             Contents = IOlib.Read_file(FullPath);
             try
             {
-                Script = Py.Import(FSpath_to_PyPath(Path));
+                Script = PythonEngine.ImportModule(FSpath_to_PyPath(Path));
                 //Script = PythonEngine.ImportModule(FSpath_to_PyPath(Path));
             }
-            catch
+            catch (Exception exception)
             {
                 // RedSkittleFox: Get name of the module that is being loaded in case we charsed:
 #if DEBUG
                 Console.WriteLine("Loading module: " + FSpath_to_PyPath(Path));
 #endif
-                Console.WriteLine("No module Found!");
+                Console.WriteLine(exception.Message);
             }
         }
 

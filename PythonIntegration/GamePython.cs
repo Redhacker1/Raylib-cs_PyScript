@@ -42,8 +42,8 @@ namespace RaylibTest.Python
 
         void Create_Windows_EnvVariables(string custom_PATH)
         {
-            Console.WriteLine(Path.Join(Environment.CurrentDirectory, @"\Python37\Windows"));
-            string pathToPython = Path.Join(Environment.CurrentDirectory, @"\Python37\Windows");
+            Console.WriteLine(Path.Join(Environment.CurrentDirectory, "\\Python37\\Windows"));
+            string pathToPython = Path.Join(Environment.CurrentDirectory, "\\Python37\\Windows");
 
 
             PythonEngine.PythonHome = pathToPython;
@@ -58,7 +58,7 @@ namespace RaylibTest.Python
             {
                 $"{pathToPython}\\Lib\\site-packages",
                 $"{pathToPython}\\Lib",
-                Path.Join(Environment.CurrentDirectory, "\\Scripts\\")
+                Path.Join(Environment.CurrentDirectory, "\\Scripts")
             };
 
             string allpaths = string.Join(';', paths);
