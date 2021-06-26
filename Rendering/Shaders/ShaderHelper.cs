@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Veldrid;
-using RaylibTest.MainAssembly;
+﻿using RaylibTest.MainAssembly;
 
 namespace RaylibTest.Rendering
 {
@@ -16,7 +12,6 @@ namespace RaylibTest.Rendering
 
         void MakeVertexShader()
         {
-            return;
         }
     }
 }

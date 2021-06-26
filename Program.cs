@@ -1,25 +1,25 @@
-﻿using System.IO;
+﻿using System;
 using System.Numerics;
+using System.Text;
+using RaylibTest.MainAssembly;
+using RaylibTest.Rendering;
 using Veldrid;
 using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
 using Veldrid.SPIRV;
-using System.Text;
-using RaylibTest.Rendering;
-using RaylibTest.MainAssembly;
+using Veldrid.StartupUtilities;
 
 namespace GettingStarted
 {
     class Program
     {
-        private static ShaderHelper Shaderlib = new ShaderHelper();
-        private static GraphicsDevice _graphicsDevice;
-        private static CommandList _commandList;
-        private static DeviceBuffer _vertexBuffer;
-        private static DeviceBuffer _indexBuffer;
-        private static DeviceBuffer myUniformBlock;
-        private static Shader[] _shaders;
-        private static Pipeline _pipeline;
+        static readonly ShaderHelper Shaderlib = new ShaderHelper();
+        static GraphicsDevice _graphicsDevice;
+        static CommandList _commandList;
+        static DeviceBuffer _vertexBuffer;
+        static DeviceBuffer _indexBuffer;
+        static DeviceBuffer myUniformBlock;
+        static Shader[] _shaders;
+        static Pipeline _pipeline;
 
         static void Main(string[] args)
         {
@@ -29,7 +29,7 @@ namespace GettingStarted
 
         static void RunRenderer()
         {
-            WindowCreateInfo windowCI = new WindowCreateInfo()
+            WindowCreateInfo windowCI = new WindowCreateInfo
             {
                 X = 100,
                 Y = 100,
@@ -47,16 +47,13 @@ namespace GettingStarted
             {
                 window.PumpEvents();
 
-                if (window.Exists)
-                {
-                    Draw();
-                }
+                if (window.Exists) Draw();
             }
 
             DisposeResources();
         }
 
-        private static void CreateResources()
+        static void CreateResources()
         {
             ResourceFactory factory = _graphicsDevice.ResourceFactory;
 
@@ -68,32 +65,41 @@ namespace GettingStarted
                 new VertexPositionColor(new Vector2(.5f, -.5f), RgbaFloat.Yellow)
             };
 
-            BufferDescription vbDescription = new BufferDescription( 4 * VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer);
+            BufferDescription vbDescription =
+                new BufferDescription(4 * VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer);
             _vertexBuffer = factory.CreateBuffer(vbDescription);
             _graphicsDevice.UpdateBuffer(_vertexBuffer, 0, quadVertices);
 
-            ushort[] quadIndices = { 0, 1, 2, 3 };
-            BufferDescription ibDescription = new BufferDescription( 4 * sizeof(ushort), BufferUsage.IndexBuffer);
+            ushort[] quadIndices = {0, 1, 2, 3};
+            BufferDescription ibDescription = new BufferDescription(4 * sizeof(ushort), BufferUsage.IndexBuffer);
             _indexBuffer = factory.CreateBuffer(ibDescription);
             _graphicsDevice.UpdateBuffer(_indexBuffer, 0, quadIndices);
 
-            VertexLayoutDescription vertexLayout = new VertexLayoutDescription( new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2),  new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4));
+            VertexLayoutDescription vertexLayout = new VertexLayoutDescription(
+                new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate,
+                    VertexElementFormat.Float2),
+                new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate,
+                    VertexElementFormat.Float4));
 
-            ShaderDescription vertexShaderDesc = new ShaderDescription( ShaderStages.Vertex, Encoding.UTF8.GetBytes(Shaderlib.GetShaderText("VertexShader.vp")), "main");
-            ShaderDescription fragmentShaderDesc = new ShaderDescription(ShaderStages.Fragment, Encoding.UTF8.GetBytes(Shaderlib.GetShaderText("FragmentShader.fp")), "main");
+            ShaderDescription vertexShaderDesc = new ShaderDescription(ShaderStages.Vertex,
+                Encoding.UTF8.GetBytes(Shaderlib.GetShaderText("VertexShader.vp")), "main");
+            ShaderDescription fragmentShaderDesc = new ShaderDescription(ShaderStages.Fragment,
+                Encoding.UTF8.GetBytes(Shaderlib.GetShaderText("FragmentShader.fp")), "main");
 
             _shaders = factory.CreateFromSpirv(vertexShaderDesc, fragmentShaderDesc);
 
             // Create pipeline
             GraphicsPipelineDescription pipelineDescription = new GraphicsPipelineDescription();
             pipelineDescription.BlendState = BlendStateDescription.SingleOverrideBlend;
-            pipelineDescription.DepthStencilState = new DepthStencilStateDescription( depthTestEnabled: true, depthWriteEnabled: true, comparisonKind: ComparisonKind.LessEqual);
+            pipelineDescription.DepthStencilState =
+                new DepthStencilStateDescription(true, true, ComparisonKind.LessEqual);
 
-            pipelineDescription.RasterizerState = new RasterizerStateDescription( cullMode: FaceCullMode.Back, fillMode: PolygonFillMode.Solid, frontFace: FrontFace.Clockwise, depthClipEnabled: true, scissorTestEnabled: false);
+            pipelineDescription.RasterizerState = new RasterizerStateDescription(FaceCullMode.Back,
+                PolygonFillMode.Solid, FrontFace.Clockwise, true, false);
 
             pipelineDescription.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
-            pipelineDescription.ResourceLayouts = System.Array.Empty<ResourceLayout>();
-            pipelineDescription.ShaderSet = new ShaderSetDescription( vertexLayouts: new VertexLayoutDescription[] { vertexLayout }, shaders: _shaders);
+            pipelineDescription.ResourceLayouts = Array.Empty<ResourceLayout>();
+            pipelineDescription.ShaderSet = new ShaderSetDescription(new[] {vertexLayout}, _shaders);
             pipelineDescription.Outputs = _graphicsDevice.SwapchainFramebuffer.OutputDescription;
 
             _pipeline = factory.CreateGraphicsPipeline(pipelineDescription);
@@ -101,7 +107,7 @@ namespace GettingStarted
             _commandList = factory.CreateCommandList();
         }
 
-        private static void Draw()
+        static void Draw()
         {
             // Begin() must be called before commands can be issued.
             _commandList.Begin();
@@ -116,11 +122,11 @@ namespace GettingStarted
             _commandList.SetPipeline(_pipeline);
             // Issue a Draw command for a single instance with 4 indices.
             _commandList.DrawIndexed(
-                indexCount: 4,
-                instanceCount: 1,
-                indexStart: 0,
-                vertexOffset: 0,
-                instanceStart: 0);
+                4,
+                1,
+                0,
+                0,
+                0);
 
             // End() must be called before commands can be submitted for execution.
             _commandList.End();
@@ -130,13 +136,10 @@ namespace GettingStarted
             _graphicsDevice.SwapBuffers();
         }
 
-        private static void DisposeResources()
+        static void DisposeResources()
         {
             _pipeline.Dispose();
-            foreach (Shader shader in _shaders)
-            {
-                shader.Dispose();
-            }
+            foreach (Shader shader in _shaders) shader.Dispose();
             _commandList.Dispose();
             _vertexBuffer.Dispose();
             _indexBuffer.Dispose();
@@ -149,6 +152,7 @@ namespace GettingStarted
         public const uint SizeInBytes = 24;
         public Vector2 Position;
         public RgbaFloat Color;
+
         public VertexPositionColor(Vector2 position, RgbaFloat color)
         {
             Position = position;

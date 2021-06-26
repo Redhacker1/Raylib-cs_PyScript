@@ -1,8 +1,8 @@
-﻿using Python.Runtime;
-using RaylibTest.MainAssembly;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Python.Runtime;
+using RaylibTest.MainAssembly;
 
 namespace RaylibTest.Python
 {
@@ -10,7 +10,7 @@ namespace RaylibTest.Python
     {
         public readonly GameIO IOlib = new GameIO();
 
-        private void Create_Linux_EnvVariables(string custom_PATH)
+        void Create_Linux_EnvVariables(string custom_PATH)
         {
             // Sets the path to python install
             string pathToPython = @"\Python37\Linux";
@@ -18,89 +18,78 @@ namespace RaylibTest.Python
             Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
 
-            var lib = new[]
-                {
+            string[] lib = new[]
+            {
                 @"\Python37\Linux\bin",
                 @"\Python37\Linux\DLLs",
                 @"\Python37\Linux\lib\python3.7\site-packages",
                 @"\Scripts"
-                };
+            };
 
             if (custom_PATH != "")
-            {
                 lib = new[]
                 {
-                @"\Python37\Linux\lib\python3.7",
-                @"\Python37\Linux\DLLs",
-                @"\Python37\Linux\lib\python3.7\site-packages",
-                @"\Scripts",
-                custom_PATH
+                    @"\Python37\Linux\lib\python3.7",
+                    @"\Python37\Linux\DLLs",
+                    @"\Python37\Linux\lib\python3.7\site-packages",
+                    @"\Scripts",
+                    custom_PATH
                 };
-            }
 
             string paths = string.Join("; ", lib);
             Environment.SetEnvironmentVariable("PYTHONPATH", paths, EnvironmentVariableTarget.Process);
         }
 
-        private void Create_Windows_EnvVariables(string custom_PATH)
+        void Create_Windows_EnvVariables(string custom_PATH)
         {
-            string pathToPython = Environment.CurrentDirectory + @"\Python37\Windows";
-            string path = pathToPython + ";";
-            Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
+            Console.WriteLine(Path.Join(Environment.CurrentDirectory, @"\Python37\Windows"));
+            string pathToPython = Path.Join(Environment.CurrentDirectory, @"\Python37\Windows");
+
+
+            PythonEngine.PythonHome = pathToPython;
+
+            Environment.SetEnvironmentVariable("PATH", pathToPython, EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
 
-            var lib = new[]
-                {
-                pathToPython + @"\Lib",
-                pathToPython + @"\DLLs",
-                pathToPython + @"\Lib\site-packages",
-                Environment.CurrentDirectory + @"\Scripts"
-                };
+            Console.WriteLine(Path.Join(Environment.CurrentDirectory, "\\Scripts\\"));
 
-            if (custom_PATH != "")
+
+            List<string> paths = new List<string>
             {
-                lib = new[]
-                {
-                pathToPython + @"\Lib",
-                pathToPython + @"\DLLs",
-                pathToPython + @"\Lib\site-packages",
-                Environment.CurrentDirectory + @"\Scripts",
-                custom_PATH
-                };
-            }
+                $"{pathToPython}\\Lib\\site-packages",
+                $"{pathToPython}\\Lib",
+                Path.Join(Environment.CurrentDirectory, "\\Scripts\\")
+            };
 
-            string paths = string.Join("; ", lib);
-            Environment.SetEnvironmentVariable("PYTHONPATH", paths, EnvironmentVariableTarget.Process);
+            string allpaths = string.Join(';', paths);
+            Environment.SetEnvironmentVariable("PYTHONPATH", allpaths, EnvironmentVariableTarget.Process);
         }
 
-        private string FSpath_to_PyPath(string FSPath)
+        string FSpath_to_PyPath(string FSPath)
         {
             string Good_path = string.Empty;
             string parent_folder = string.Empty;
             foreach (string valid_path in G_vars.Python_Script_Directories)
-            {
                 if (FSPath.Contains(valid_path))
                 {
                     Good_path = valid_path;
                     parent_folder = valid_path.Replace("\\", "/");
                     string[] parent_folder_intermediate = parent_folder.Split("/");
-                    parent_folder = parent_folder_intermediate[parent_folder_intermediate.Length - 1];
+                    parent_folder = parent_folder_intermediate[^1];
                     break;
                 }
-            }
+
             if (Good_path == string.Empty)
             {
                 return null;
             }
-            else
-            {
-                string pypath = FSPath.Replace(Good_path, "");
-                pypath = pypath.Replace("\\", "/");
-                pypath = pypath.Replace("/", ".");
-                pypath = pypath.Replace(".py", "");
-                pypath = parent_folder + pypath;
-                return pypath;
-            }
+
+            string pypath = FSPath.Replace(Good_path, "");
+            pypath = pypath.Replace("\\", "/");
+            pypath = pypath.Replace("/", ".");
+            pypath = pypath.Replace(".py", "");
+            pypath = parent_folder + pypath;
+            return pypath;
         }
 
         public void Initpython(string custom_PATH = "")
@@ -114,8 +103,8 @@ namespace RaylibTest.Python
             {
                 Create_Windows_EnvVariables(custom_PATH);
             }
-            PythonEngine.Initialize();
 
+            PythonEngine.Initialize();
         }
 
         public void TerminatePython()
@@ -128,34 +117,28 @@ namespace RaylibTest.Python
             {
                 Console.WriteLine(Exception.Message);
             }
-
         }
 
         public int Python_Console()
         {
-
             int i = Runtime.Py_Main(0, new string[] { });
             return i;
-
         }
 
         //This is a manually allow the python files already there to populate the list so they can be referenced initially, the AddPyScripts filewatcher and events will not add these files and so they must be added like this manually.
         public void Add_Py_Scripts()
         {
             foreach (string path in G_vars.Python_Script_Directories)
+            foreach (string file in Directory.GetFiles(path, "*.py", SearchOption.AllDirectories))
             {
-                foreach (string file in Directory.GetFiles(path, "*.py", SearchOption.AllDirectories))
-                {
-                    // DELETEME: ~RedSkittleFox
+                // DELETEME: ~RedSkittleFox
 #if DEBUG
-                    Console.WriteLine("Currently processing file: " + file);
+                Console.WriteLine("Currently processing file: " + file);
 #endif
 
-                    PyScript Script_c = new PyScript();
-                    Script_c.Setter(file);
-                    G_vars.Scripts[Script_c.ModuleName] = Script_c;
-                }
-
+                PyScript Script_c = new PyScript();
+                Script_c.Setter(file);
+                G_vars.Scripts[Script_c.ModuleName] = Script_c;
             }
         }
 
@@ -169,9 +152,9 @@ namespace RaylibTest.Python
                     // Give the FileSystem watcher its attributes
                     Path = path,
                     NotifyFilter = NotifyFilters.LastAccess
-                                     | NotifyFilters.LastWrite
-                                     | NotifyFilters.FileName
-                                     | NotifyFilters.DirectoryName,
+                                   | NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName
+                                   | NotifyFilters.DirectoryName,
                     Filter = "*.py",
                     IncludeSubdirectories = true,
                     InternalBufferSize = 65536
@@ -195,31 +178,28 @@ namespace RaylibTest.Python
             Add_Py_Scripts();
             Track_Py_Scripts();
             Console.WriteLine("Script FS initialized Python now ready to be used");
-
         }
 
-        private void OnChanged(object source, FileSystemEventArgs e)
+        void OnChanged(object source, FileSystemEventArgs e)
         {
             // Set the key of the dictionary referring to the script to reflect the new changes made to the file. Also removes the "Safe Script" tag from the script due to it now able to have syntax errors in the script
-             string ModuleName = FSpath_to_PyPath(e.FullPath);
+            string ModuleName = FSpath_to_PyPath(e.FullPath);
             G_vars.Scripts[ModuleName].SafeScript = false;
             G_vars.Scripts[ModuleName].Contents = IOlib.Read_file(e.FullPath);
             G_vars.Scripts[ModuleName].ReloadModule();
             Console.WriteLine("Changes to {0} have been reflected", ModuleName);
-
         }
 
-        private void OnAdded(object source, FileSystemEventArgs e)
+        void OnAdded(object source, FileSystemEventArgs e)
         {
             // Add a new key to the dictionary and set the value to be the value to be the contents of the script file.
             PyScript Script_c = new PyScript();
             Script_c.Setter(e.FullPath);
             G_vars.Scripts[Script_c.ModuleName] = Script_c;
             Console.WriteLine("Script {0} has been added", Script_c.ModuleName);
-
         }
 
-        private void OnRenamed(object source, RenamedEventArgs e)
+        void OnRenamed(object source, RenamedEventArgs e)
         {
             // Reimports the file and removes the old one
             string ModuleName = FSpath_to_PyPath(e.OldFullPath);
@@ -229,7 +209,6 @@ namespace RaylibTest.Python
             Script_c.Setter(e.FullPath);
             G_vars.Scripts[Script_c.ModuleName] = Script_c;
             Console.WriteLine("Script {0} has been Reimported", Script_c.ModuleName);
-
         }
     }
 }

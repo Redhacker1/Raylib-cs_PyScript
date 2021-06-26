@@ -1,9 +1,8 @@
-﻿using RaylibTest.Python;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Text;
+using System.Reflection;
+using RaylibTest.Python;
 
 namespace RaylibTest.MainAssembly
 {
@@ -12,18 +11,24 @@ namespace RaylibTest.MainAssembly
         //Global Variables
 
         //
-        static string Executable_Path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        static readonly string Executable_Path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         // List of valid paths for python scripts
-        public static string[] Python_Script_Directories = {Executable_Path + @"\Scripts" };
+        public static string[] Python_Script_Directories = {Executable_Path + @"\Scripts"};
+
         //Contains a Dictionary of Script paths and their contents for caching (will work out hot reloading later)
-        static public Dictionary<string, PyScript> Scripts = new Dictionary<string, PyScript>();
+        public static Dictionary<string, PyScript> Scripts = new Dictionary<string, PyScript>();
+
         // Scripts run once and known to be safe to run again without error handling
-        static public List<PyScript> Safe_Scripts = new List<PyScript>();
+        public static List<PyScript> Safe_Scripts = new List<PyScript>();
+
         // Dictionary of FileWatchers
-        static public Dictionary<string, FileSystemWatcher> File_Watchers = new Dictionary<string, FileSystemWatcher>();
+        public static Dictionary<string, FileSystemWatcher> File_Watchers = new Dictionary<string, FileSystemWatcher>();
+
         // FPS limit
-        static public int FPS_Limit = 0;
+        public static int FPS_Limit = 0;
+
         //Resolution
-        static public Vector2 Resolution = new Vector2(1024, 768);
+        public static Vector2 Resolution = new Vector2(1024, 768);
     }
 }

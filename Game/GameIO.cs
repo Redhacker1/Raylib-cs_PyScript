@@ -4,7 +4,6 @@ namespace RaylibTest.MainAssembly
 {
     class GameIO
     {
-
         public string Read_file(string path)
         {
             string contents;
